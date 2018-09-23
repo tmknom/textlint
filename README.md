@@ -7,7 +7,9 @@
 [![MicroBadger Layers](https://img.shields.io/microbadger/layers/tmknom/textlint.svg)](https://microbadger.com/images/tmknom/textlint)
 [![License](https://img.shields.io/github/license/tmknom/textlint.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Dockerfile template.
+Natural language linter for text based on Docker.
+
+This is [textlint](https://github.com/textlint/textlint) wrapper.
 
 ## Requirements
 
@@ -16,8 +18,7 @@ Dockerfile template.
 ## Usage
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tmknom/textlint/master/install | sh -s example
-cd example
+docker run --rm -v ${PWD}:/work tmknom/textlint '**/*.md'
 ```
 
 ## Makefile targets
@@ -43,19 +44,6 @@ make install
 ### Deployment
 
 Automatically deployed by "[DockerHub Automated Build](https://docs.docker.com/docker-hub/builds/)" after merge.
-
-## Continuous Deployment
-
-### Prepare
-
-1. Create repository on GitHub
-   - <https://help.github.com/articles/create-a-repo/>
-2. Setting up your build on CircleCI
-   - <https://circleci.com/docs/2.0/getting-started/#setting-up-your-build-on-circleci>
-3. Configure automated builds on Docker Hub
-   - <https://docs.docker.com/docker-hub/builds/#create-an-automated-build>
-4. Configure webhook on MicroBadger
-   - <https://medium.com/microscaling-systems/microbadger-keep-your-metadata-fresh-with-a-webhook-651ee26cd4a6>
 
 ### Deployment Pipeline
 
