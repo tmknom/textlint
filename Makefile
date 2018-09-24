@@ -10,6 +10,10 @@ DOCKER_REPO := index.docker.io/${REPO_NAME}
 IMAGE_TAG := latest
 IMAGE_NAME := $(shell echo ${DOCKER_REPO} | cut -d / -f 2,3):${IMAGE_TAG}
 
+# Macro definitions
+define list_shellscript
+	grep '^#!' -rn . | grep ':1:#!' | cut -d: -f1 | grep -v .git
+endef
 
 # Phony Targets
 install: ## Install requirements
@@ -24,21 +28,21 @@ build: ## Build docker image
 	DOCKER_REPO=${DOCKER_REPO} DOCKER_TAG=${IMAGE_TAG} IMAGE_NAME=${IMAGE_NAME} hooks/build
 	docker images ${REPO_NAME}
 
-lint: lint-markdown lint-dockerfile lint-shellscript ## Lint code
-
-lint-markdown:
-	docker run --rm -i -v "$(CURDIR):/work" tmknom/markdownlint
+lint: lint-dockerfile lint-shellscript lint-markdown ## Lint code
 
 lint-dockerfile:
 	docker run --rm -i hadolint/hadolint < Dockerfile
 
 lint-shellscript:
-	docker run --rm -v "$(CURDIR):/mnt" koalaman/shellcheck hooks/build
+	$(call list_shellscript) | xargs -I {} docker run --rm -v "$(CURDIR):/mnt" koalaman/shellcheck {}
+
+lint-markdown:
+	docker run --rm -i -v "$(CURDIR):/work" tmknom/markdownlint
 
 format: format-shellscript format-markdown format-json ## Format code
 
 format-shellscript:
-	docker run --rm -v "$(CURDIR):/work" -w /work jamesmstone/shfmt -i 2 -ci -kp -w hooks/build
+	$(call list_shellscript) | xargs -I {} docker run --rm -v "$(CURDIR):/work" -w /work jamesmstone/shfmt -i 2 -ci -kp -w {}
 
 format-markdown:
 	docker run --rm -v "$(CURDIR):/work" tmknom/prettier --parser=markdown --write '**/*.md'
